@@ -12,12 +12,15 @@ interface SpatialMapProps {
   isProcessing: boolean;
   queryResults?: any;
   showCaNvBorderBuffer?: boolean;
+  importedLayer?: any;
+  geeTileUrl?: string | null;
+  bbox?: [number, number, number, number] | null;
 }
 
 // Set Mapbox access token
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || '';
 
-export function SpatialMap({ isProcessing, queryResults, showCaNvBorderBuffer }: SpatialMapProps) {
+export function SpatialMap({ isProcessing, queryResults, showCaNvBorderBuffer, importedLayer, geeTileUrl, bbox }: SpatialMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const draw = useRef<MapboxDraw | null>(null);
@@ -120,7 +123,6 @@ export function SpatialMap({ isProcessing, queryResults, showCaNvBorderBuffer }:
     // Handle map load
     map.current.on('load', () => {
       setMapLoaded(true);
-      addDefaultLayers();
     });
 
     // Handle draw events
@@ -352,168 +354,7 @@ export function SpatialMap({ isProcessing, queryResults, showCaNvBorderBuffer }:
         map.current.fitBounds(bounds, { padding: 50 });
       }
     }
-    // Fallback for template-only results (no spatial processing)
-    else if (queryResults.method === 'template' && queryResults.operation === 'BUFFER') {
-      // Simulate a buffer around California (approximate)
-      const californiaBuffer: GeoJSON.FeatureCollection = {
-        type: 'FeatureCollection',
-        features: [
-          {
-            type: 'Feature',
-            geometry: {
-              type: 'Polygon',
-              coordinates: [[
-                [-124.48, 32.53],
-                [-114.13, 32.53],
-                [-114.13, 42.01],
-                [-124.48, 42.01],
-                [-124.48, 32.53]
-              ]]
-            },
-            properties: {
-              name: 'Buffer around California',
-              type: 'buffer'
-            }
-          }
-        ]
-      };
-
-      map.current.addSource('query-results', {
-        type: 'geojson',
-        data: californiaBuffer
-      });
-
-      map.current.addLayer({
-        id: 'query-results',
-        type: 'fill',
-        source: 'query-results',
-        paint: {
-          'fill-color': '#10b981',
-          'fill-opacity': 0.6
-        }
-      });
-
-      // Fit map to result
-      const bounds = new mapboxgl.LngLatBounds();
-      californiaBuffer.features.forEach((feature: any) => {
-        if (feature.geometry.type === 'Polygon') {
-          feature.geometry.coordinates[0].forEach((coord: any) => {
-            bounds.extend(coord as [number, number]);
-          });
-        }
-      });
-      map.current.fitBounds(bounds, { padding: 50 });
-    }
   }, [queryResults, mapLoaded]);
-
-  const addDefaultLayers = async () => {
-    if (!map.current) return;
-
-    try {
-      // Add states layer
-      const statesResponse = await fetch('/api/geojson/states');
-      const statesData = await statesResponse.json();
-      
-      map.current.addSource('states', {
-        type: 'geojson',
-        data: statesData
-      });
-
-      map.current.addLayer({
-        id: 'states-fill',
-        type: 'fill',
-        source: 'states',
-        paint: {
-          'fill-color': '#e5e7eb',
-          'fill-opacity': 0.3
-        }
-      });
-
-      map.current.addLayer({
-        id: 'states-border',
-        type: 'line',
-        source: 'states',
-        paint: {
-          'line-color': '#9ca3af',
-          'line-width': 1
-        }
-      });
-
-      // Add coastline layer
-      const coastlineResponse = await fetch('/api/geojson/coastline');
-      const coastlineData = await coastlineResponse.json();
-      
-      map.current.addSource('coastline', {
-        type: 'geojson',
-        data: coastlineData
-      });
-
-      map.current.addLayer({
-        id: 'coastline-line',
-        type: 'line',
-        source: 'coastline',
-        paint: {
-          'line-color': '#3b82f6',
-          'line-width': 2
-        }
-      });
-
-    } catch (error) {
-      console.error('Error loading default layers:', error);
-    }
-  };
-
-  // NEW: Function to compute and display VA-WV border buffer
-  const showVaWvBuffer = async () => {
-    if (!map.current) return;
-    // Remove previous special buffer if exists
-    if (map.current.getLayer('va-wv-buffer')) map.current.removeLayer('va-wv-buffer');
-    if (map.current.getSource('va-wv-buffer')) map.current.removeSource('va-wv-buffer');
-    // Fetch states GeoJSON
-    const res = await fetch('/api/geojson/states');
-    const states = await res.json();
-    // Find VA and WV
-    const va = states.features.find((f: any) => f.properties.name === 'Virginia' || f.properties.NAME === 'Virginia');
-    const wv = states.features.find((f: any) => f.properties.name === 'West Virginia' || f.properties.NAME === 'West Virginia');
-    if (!va || !wv) return;
-    // Get boundaries as lines
-    const vaLine = turf.polygonToLine(va);
-    const wvLine = turf.polygonToLine(wv);
-    // Find intersection points (approximate shared border)
-    const borderPoints = turf.lineIntersect(vaLine, wvLine);
-    if (!borderPoints.features.length) return;
-    // Create a LineString from intersection points (approximate)
-    const borderLine: Feature<LineString> = {
-      type: 'Feature',
-      geometry: {
-        type: 'LineString',
-        coordinates: borderPoints.features.map((pt: any) => pt.geometry.coordinates)
-      },
-      properties: {}
-    };
-    // Buffer the border by 10 miles
-    const buffer = turf.buffer(borderLine, 10, { units: 'miles' });
-    if (!buffer || !buffer.geometry || buffer.geometry.type !== 'Polygon') return;
-    // Add to map
-    map.current.addSource('va-wv-buffer', { type: 'geojson', data: buffer });
-    map.current.addLayer({
-      id: 'va-wv-buffer',
-      type: 'fill',
-      source: 'va-wv-buffer',
-      paint: { 'fill-color': '#f59e42', 'fill-opacity': 0.5 }
-    });
-    // Fit to bounds
-    const bounds = new mapboxgl.LngLatBounds();
-    (buffer.geometry.coordinates[0] as number[][]).forEach((coord: any) => bounds.extend(coord));
-    map.current.fitBounds(bounds, { padding: 50 });
-  };
-
-  // React to prop change
-  useEffect(() => {
-    if (showCaNvBorderBuffer) {
-      showVaWvBuffer();
-    }
-  }, [showCaNvBorderBuffer]);
 
   return (
     <div className="relative w-full h-full">

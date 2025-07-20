@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Google Earth Engine service account key
+celtic-defender-461219-j5-ed983bf91afc.json

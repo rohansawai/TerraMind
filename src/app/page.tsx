@@ -61,118 +61,54 @@ function NLQInput({ onResults }: { onResults: (results: any) => void }) {
   );
 }
 
-export default function TerraMind() {
-  const [activeTab, setActiveTab] = useState<'query' | 'layers' | 'results'>('query');
-  const [queryResults, setQueryResults] = useState<any>(null);
-  const [showCaNvBorderBuffer, setShowCaNvBorderBuffer] = useState(false);
-
+export default function LandingPage() {
   return (
-    <div className="h-screen flex flex-col bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
-                <Globe className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">TerraMind</h1>
-                <p className="text-sm text-gray-500">AI-Native Spatial IDE</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2 text-sm text-gray-600">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span>Ready</span>
-              </div>
-              <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                <Download className="w-4 h-4 mr-2 inline" />
-                Export
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Left Sidebar */}
-        <div className="w-96 bg-white border-r border-gray-200 flex flex-col">
-          {/* Tab Navigation */}
-          <div className="flex border-b border-gray-200">
-            <button
-              onClick={() => setActiveTab('query')}
-              className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
-                activeTab === 'query'
-                  ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-              }`}
-            >
-              <Search className="w-4 h-4 mr-2 inline" />
-              Query
-            </button>
-            <button
-              onClick={() => setActiveTab('layers')}
-              className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
-                activeTab === 'layers'
-                  ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-              }`}
-            >
-              <Layers className="w-4 h-4 mr-2 inline" />
-              Layers
-            </button>
-            <button
-              onClick={() => setActiveTab('results')}
-              className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
-                activeTab === 'results'
-                  ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-              }`}
-            >
-              <BarChart3 className="w-4 h-4 mr-2 inline" />
-              Results
-            </button>
-          </div>
-
-          {/* Tab Content */}
-          <div className="flex-1 overflow-y-auto">
-            {activeTab === 'query' && (
-              <div className="p-4">
-                {/* NLQInput replaces QueryInterface here */}
-                <NLQInput onResults={setQueryResults} />
-              </div>
-            )}
-            {activeTab === 'layers' && <LayerPanel />}
-            {activeTab === 'results' && <ResultsPanel />}
-          </div>
-        </div>
-
-        {/* Map Area */}
-        <div className="flex-1 relative">
-          <SpatialMap isProcessing={false} queryResults={queryResults} showCaNvBorderBuffer={showCaNvBorderBuffer} />
-          {/* Map Controls Overlay (optional) */}
-          <div className="absolute top-4 right-4 z-10">
-            <div className="bg-white rounded-lg shadow-lg p-2 space-y-2">
-              <button className="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded"
-                onClick={() => setShowCaNvBorderBuffer(true)}
-                title="Show 10-mile buffer around CA-NV border">
-                <span className="sr-only">Show CA-NV Border Buffer</span>
-                <Layers className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        </div>
+    <main style={{
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: 'linear-gradient(135deg, #e0e7ff 0%, #f0fdfa 100%)',
+      fontFamily: 'sans-serif',
+    }}>
+      <div style={{
+        background: 'white',
+        borderRadius: 16,
+        boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+        padding: '48px 32px',
+        maxWidth: 480,
+        textAlign: 'center',
+      }}>
+        <h1 style={{ fontSize: 36, fontWeight: 700, marginBottom: 16, color: '#1e293b' }}>
+          TerraMind
+        </h1>
+        <p style={{ fontSize: 18, color: '#334155', marginBottom: 32 }}>
+          The AI-Native Spatial IDE.<br />
+          Query, analyze, and visualize geospatial data with natural language.
+        </p>
+        <a
+          href="/app"
+          style={{
+            display: 'inline-block',
+            background: 'linear-gradient(90deg, #2563eb 0%, #06b6d4 100%)',
+            color: 'white',
+            fontWeight: 600,
+            fontSize: 18,
+            padding: '16px 40px',
+            borderRadius: 8,
+            textDecoration: 'none',
+            boxShadow: '0 2px 8px rgba(37,99,235,0.08)',
+            transition: 'background 0.2s',
+          }}
+        >
+          Launch App
+        </a>
       </div>
-
-      {/* Features Section */}
-      <section className="py-20 bg-white">
-        {/* ...features content... */}
-      </section>
-
-      {/* Footer */}
-    </div>
+      <footer style={{ marginTop: 48, color: '#64748b', fontSize: 14 }}>
+        &copy; {new Date().getFullYear()} TerraMind. All rights reserved.
+      </footer>
+    </main>
   );
 }
 
