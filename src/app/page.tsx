@@ -63,51 +63,92 @@ function NLQInput({ onResults }: { onResults: (results: any) => void }) {
 
 export default function LandingPage() {
   return (
-    <main style={{
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      background: 'linear-gradient(135deg, #e0e7ff 0%, #f0fdfa 100%)',
-      fontFamily: 'sans-serif',
-    }}>
-      <div style={{
-        background: 'white',
-        borderRadius: 16,
-        boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
-        padding: '48px 32px',
-        maxWidth: 480,
-        textAlign: 'center',
-      }}>
-        <h1 style={{ fontSize: 36, fontWeight: 700, marginBottom: 16, color: '#1e293b' }}>
-          TerraMind
+    <main className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 via-white to-cyan-50 dark:from-gray-900 dark:via-gray-950 dark:to-blue-900 font-sans">
+      {/* Hero Section */}
+      <section className="w-full max-w-3xl text-center py-24 px-6">
+        <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4 leading-tight">
+          TerraMind: The AI-Native Spatial IDE
         </h1>
-        <p style={{ fontSize: 18, color: '#334155', marginBottom: 32 }}>
-          The AI-Native Spatial IDE.<br />
-          Query, analyze, and visualize geospatial data with natural language.
+        <p className="text-lg md:text-2xl text-gray-700 dark:text-gray-200 mb-8">
+          Instantly turn natural language into powerful geospatial analysis and interactive maps.<br />
+          Powered by Google Earth Engine and next-gen AI.
         </p>
         <a
           href="/app"
-          style={{
-            display: 'inline-block',
-            background: 'linear-gradient(90deg, #2563eb 0%, #06b6d4 100%)',
-            color: 'white',
-            fontWeight: 600,
-            fontSize: 18,
-            padding: '16px 40px',
-            borderRadius: 8,
-            textDecoration: 'none',
-            boxShadow: '0 2px 8px rgba(37,99,235,0.08)',
-            transition: 'background 0.2s',
-          }}
+          className="inline-block bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold text-lg px-8 py-4 rounded-lg shadow-lg hover:from-blue-700 hover:to-cyan-600 transition mb-4"
         >
-          Launch App
+          Try the Demo
         </a>
-      </div>
-      <footer style={{ marginTop: 48, color: '#64748b', fontSize: 14 }}>
-        &copy; {new Date().getFullYear()} TerraMind. All rights reserved.
-      </footer>
+        <div className="mt-4 text-gray-500 dark:text-gray-400 text-sm">
+          <span className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full font-semibold mr-2">Now Open for Investor Demos</span>
+        </div>
+      </section>
+
+      {/* Product Highlights */}
+      <section className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-3 gap-8 py-12 px-6">
+        <div className="flex flex-col items-center text-center">
+          <div className="bg-blue-100 text-blue-700 rounded-full p-4 mb-3">
+            <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 20l9-5-9-5-9 5 9 5z" /><path d="M12 12V4m0 0L3 9m9-5l9 5" /></svg>
+          </div>
+          <h3 className="font-bold text-lg mb-2 text-gray-900 dark:text-white">AI Code Generation</h3>
+          <p className="text-gray-600 dark:text-gray-300">Generate Python geospatial scripts from plain English. No coding required.</p>
+        </div>
+        <div className="flex flex-col items-center text-center">
+          <div className="bg-cyan-100 text-cyan-700 rounded-full p-4 mb-3">
+            <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="M2 12h20M12 2v20" /></svg>
+          </div>
+          <h3 className="font-bold text-lg mb-2 text-gray-900 dark:text-white">Google Earth Engine Integration</h3>
+          <p className="text-gray-600 dark:text-gray-300">Analyze and visualize global-scale geospatial data in seconds.</p>
+        </div>
+        <div className="flex flex-col items-center text-center">
+          <div className="bg-green-100 text-green-700 rounded-full p-4 mb-3">
+            <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M3 12l2-2 4 4 8-8 2 2-10 10z" /></svg>
+          </div>
+          <h3 className="font-bold text-lg mb-2 text-gray-900 dark:text-white">Instant Map Results</h3>
+          <p className="text-gray-600 dark:text-gray-300">See your results on an interactive map, instantly shareable and embeddable.</p>
+        </div>
+      </section>
+
+      {/* Why TerraMind? */}
+      <section className="w-full max-w-3xl py-12 px-6 text-center">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Why TerraMind?</h2>
+        <p className="text-gray-700 dark:text-gray-200 text-lg mb-6">
+          TerraMind is revolutionizing geospatial analysis for enterprises, governments, and researchers. Our AI-native platform makes advanced spatial analytics accessible to everyone, not just GIS experts.
+        </p>
+        <div className="flex flex-col md:flex-row justify-center gap-6">
+          <div className="flex-1 bg-white dark:bg-gray-900 rounded-lg shadow p-6">
+            <h3 className="font-semibold text-blue-700 dark:text-blue-400 mb-2">10x Faster Insights</h3>
+            <p className="text-gray-600 dark:text-gray-300">From question to map in seconds, not days.</p>
+          </div>
+          <div className="flex-1 bg-white dark:bg-gray-900 rounded-lg shadow p-6">
+            <h3 className="font-semibold text-cyan-700 dark:text-cyan-400 mb-2">No-Code, No Limits</h3>
+            <p className="text-gray-600 dark:text-gray-300">Empower your team to run advanced analyses without writing code.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Team & Vision */}
+      <section className="w-full max-w-3xl py-12 px-6 text-center">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Our Vision</h2>
+        <p className="text-gray-700 dark:text-gray-200 text-lg mb-6">
+          We believe the future of geospatial intelligence is AI-driven, collaborative, and accessible to all. TerraMind is building the platform to make that future a reality.
+        </p>
+        <div className="flex flex-col items-center gap-2">
+          <span className="text-gray-500 dark:text-gray-400 text-sm">Built by a passionate team of AI, GIS, and cloud experts.</span>
+        </div>
+      </section>
+
+      {/* Contact/CTA */}
+      <section className="w-full max-w-2xl py-12 px-6 text-center">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Interested in Investing or Partnering?</h2>
+        <p className="text-gray-700 dark:text-gray-200 mb-6">Contact us for a demo, partnership, or to learn more about our vision for AI-powered geospatial intelligence.</p>
+        <a
+          href="mailto:founder@terramind.ai"
+          className="inline-block bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold text-lg px-8 py-4 rounded-lg shadow-lg hover:from-blue-700 hover:to-cyan-600 transition"
+        >
+          Contact the Founders
+        </a>
+      </section>
     </main>
   );
 }

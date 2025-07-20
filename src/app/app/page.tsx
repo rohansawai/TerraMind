@@ -172,6 +172,9 @@ function PythonCodeTab({ code, setCode, setGeeTileUrl, setBbox, setImportedLayer
     return { tileUrl, bbox, geojson };
   }
 
+  // Set the backend URL (prefer env var, fallback to hardcoded)
+  const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://terramind-backend-s3lc.onrender.com';
+
   const handleRun = async () => {
     setIsRunning(true);
     setRunError(null);
@@ -180,7 +183,7 @@ function PythonCodeTab({ code, setCode, setGeeTileUrl, setBbox, setImportedLayer
     setBbox(null);
     setImportedLayer(null);
     try {
-      const res = await fetch("http://localhost:8000/run", {
+      const res = await fetch(`${BACKEND_URL}/run`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code }),
