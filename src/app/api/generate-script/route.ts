@@ -25,7 +25,12 @@ export async function POST(req: NextRequest) {
 - If previous context is provided, use it to inform your response and update it as needed.
 - Only output a raw JSON object, not a string or code block.
 - Do not wrap the JSON in quotes or triple backticks.
-- Never output the JSON as a string. Output a raw JSON object only.`;
+- Never output the JSON as a string. Output a raw JSON object only.
+- Never wrap the JSON in code blocks or quotes. Never output the JSON as a string. Output a raw JSON object only.
+- Never reply with a greeting or plain text. Always return a JSON object as specified, even if the user says hello or hi.
+- Only use current, supported Earth Engine datasets. Do not use deprecated or removed assets. For Landsat 8, use 'LANDSAT/LC08/C02/T1_TOA'.
+- If the user specifies a single date for filtering an image collection, always set the end date to one week after the start date (end_date = start_date + 7 days) to avoid empty date range errors in Earth Engine.
+- If using Sentinel-1 SAR data, always check that both 'VV' and 'VH' bands exist in each image before using them (e.g., by filtering or conditional logic). If not present, skip or handle safely to avoid errors. Never assume both bands are present in all images.`;
 
     // Build the message list for OpenAI
     const messages: any[] = [
@@ -45,45 +50,50 @@ export async function POST(req: NextRequest) {
     }
     messages.push({ role: 'user', content: userPrompt });
 
-    // Call OpenAI
+    // Define the function schema for tool-calling
+    const tools = [
+      {
+        type: 'function' as const,
+        function: {
+          name: 'myResponse',
+          description: 'Return the code, explanation, and context for a geospatial analysis task.',
+          parameters: {
+            type: 'object',
+            properties: {
+              code: { type: 'string', description: 'The Python code to run.' },
+              explanation: { type: 'string', description: 'Explanation of the code.' },
+              context: { type: 'string', description: 'Context for the user request.' }
+            },
+            required: ['code', 'explanation', 'context']
+          }
+        }
+      }
+    ];
+
+    // Call OpenAI with function-calling
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4',
+      model: 'gpt-4-1106-preview',
       messages,
       temperature: 0.2,
       max_tokens: 900,
+      tools,
+      tool_choice: 'auto',
     });
-    const content = completion.choices[0]?.message?.content;
-    if (!content) {
-      return NextResponse.json({ error: 'No response from OpenAI' }, { status: 500 });
+
+    // Extract the function call arguments
+    const toolCall = completion.choices[0]?.message?.tool_calls?.[0];
+    let args = toolCall?.function?.arguments;
+    if (!args) {
+      return NextResponse.json({ error: 'No function_call arguments returned by OpenAI', details: completion }, { status: 500 });
     }
-    let parsed;
-    try {
-      parsed = JSON.parse(content);
-      if (typeof parsed === 'string') {
-        parsed = JSON.parse(parsed);
-      }
-    } catch (e) {
-      // Try to strip code block markers and parse again
-      const cleaned = content.replace(/```json|```/g, '').trim();
-      try {
-        parsed = JSON.parse(cleaned);
-        if (typeof parsed === 'string') {
-          parsed = JSON.parse(parsed);
-        }
-      } catch {
-        // Final fallback: try direct parse if it looks like JSON
-        if (content.trim().startsWith('{') && content.trim().endsWith('}')) {
-          try {
-            parsed = JSON.parse(content.trim());
-          } catch {
-            return NextResponse.json({ error: 'Failed to parse OpenAI response as JSON', details: content }, { status: 500 });
-          }
-        } else {
-          return NextResponse.json({ error: 'Failed to parse OpenAI response as JSON', details: content }, { status: 500 });
-        }
-      }
+    // Parse arguments if it's a string
+    if (typeof args === 'string') {
+      args = JSON.parse(args);
     }
-    const { code, explanation, context } = parsed;
+    if (!args || typeof args !== 'object') {
+      return NextResponse.json({ error: 'Function call arguments are not an object', details: args }, { status: 500 });
+    }
+    const { code, explanation, context } = args;
     return NextResponse.json({ code, explanation, context });
   } catch (error) {
     console.error('Generate Script API error:', error);

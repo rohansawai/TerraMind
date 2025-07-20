@@ -61,7 +61,7 @@ async def run_code(req: CodeRequest):
             match = TILE_URL_REGEX.search(result.stdout)
             if match:
                 tile_url = match.group(0)
-            # Try to extract bbox
+            # Try to extract bbox from JSON lines
             for line in result.stdout.splitlines():
                 try:
                     obj = json.loads(line)
@@ -69,6 +69,30 @@ async def run_code(req: CodeRequest):
                         bbox = obj['bbox']
                 except Exception:
                     continue
+            # Try to extract bbox from 'Bounding Box:' print output (line-based, robust for 2D arrays)
+            if bbox is None:
+                for line in result.stdout.splitlines():
+                    if line.strip().startswith('Bounding Box:'):
+                        bbox_str = line.split('Bounding Box:', 1)[1].strip()
+                        # Remove trailing characters after the last ']'
+                        last_bracket = bbox_str.rfind(']')
+                        if last_bracket != -1:
+                            bbox_str = bbox_str[:last_bracket+1]
+                        print('Raw bbox string:', repr(bbox_str))  # Debug log
+                        try:
+                            bbox_arr = json.loads(bbox_str)
+                            if isinstance(bbox_arr, list) and isinstance(bbox_arr[0], list):
+                                coords = (
+                                    bbox_arr[:-1]
+                                    if len(bbox_arr) > 4 and bbox_arr[0] == bbox_arr[-1]
+                                    else bbox_arr
+                                )
+                                lons = [pt[0] for pt in coords]
+                                lats = [pt[1] for pt in coords]
+                                bbox = [min(lons), min(lats), max(lons), max(lats)]
+                        except Exception as e:
+                            print('Failed to parse bbox:', e)
+                        break  # Only process the first matching line
             # Try to parse as GeoJSON
             try:
                 parsed = json.loads(result.stdout)

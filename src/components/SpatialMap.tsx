@@ -356,6 +356,58 @@ export function SpatialMap({ isProcessing, queryResults, showCaNvBorderBuffer, i
     }
   }, [queryResults, mapLoaded]);
 
+  // --- Add raster tile layer for GEE tile URL ---
+  useEffect(() => {
+    if (!map.current || !mapLoaded) {
+      console.log('Map not ready. mapLoaded:', mapLoaded, 'map.current:', !!map.current);
+      return;
+    }
+
+    console.log('geeTileUrl:', geeTileUrl);
+    console.log('bbox:', bbox);
+
+    // Remove previous raster layer/source if they exist
+    if (map.current.getLayer('gee-raster')) {
+      map.current.removeLayer('gee-raster');
+      console.log('Removed previous gee-raster layer');
+    }
+    if (map.current.getSource('gee-raster')) {
+      map.current.removeSource('gee-raster');
+      console.log('Removed previous gee-raster source');
+    }
+
+    if (geeTileUrl) {
+      map.current.addSource('gee-raster', {
+        type: 'raster',
+        tiles: [geeTileUrl],
+        tileSize: 256,
+      });
+      map.current.addLayer({
+        id: 'gee-raster',
+        type: 'raster',
+        source: 'gee-raster',
+        paint: {
+          'raster-opacity': 1,
+        },
+      }); // Add on top
+      console.log('Added gee-raster source and layer');
+
+      // Fit to bbox if provided and valid
+      if (
+        bbox &&
+        bbox.length === 4 &&
+        bbox.every((v) => typeof v === 'number' && isFinite(v))
+      ) {
+        const bounds: [[number, number], [number, number]] = [
+          [bbox[0], bbox[1]],
+          [bbox[2], bbox[3]],
+        ];
+        map.current.fitBounds(bounds, { padding: 40 });
+        console.log('Fitted map to bbox:', bounds);
+      }
+    }
+  }, [geeTileUrl, bbox, mapLoaded]);
+
   return (
     <div className="relative w-full h-full">
       <div ref={mapContainer} className="w-full h-full" />
