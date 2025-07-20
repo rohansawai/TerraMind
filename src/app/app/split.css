@@ -1,0 +1,27 @@
+/* Split gutter styles */
+.split-vertical .gutter, .split-horizontal .gutter {
+  background: #000 !important; /* Pure black */
+  transition: background 0.2s;
+}
+.split-vertical .gutter:hover, .split-horizontal .gutter:hover {
+  background: #222 !important; /* Slightly lighter black for hover */
+}
+
+/* Custom scrollbars for all scrollable panes */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #d1d5db; /* Tailwind gray-300 */
+  border-radius: 4px;
+}
+::-webkit-scrollbar-track {
+  background: #f3f4f6; /* Tailwind gray-100 */
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db #f3f4f6;
+} 

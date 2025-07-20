@@ -165,6 +165,13 @@ export default function TerraMind() {
           </div>
         </div>
       </div>
+
+      {/* Features Section */}
+      <section className="py-20 bg-white">
+        {/* ...features content... */}
+      </section>
+
+      {/* Footer */}
     </div>
   );
 }
