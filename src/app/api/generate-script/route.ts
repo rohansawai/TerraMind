@@ -30,7 +30,15 @@ export async function POST(req: NextRequest) {
 - Never reply with a greeting or plain text. Always return a JSON object as specified, even if the user says hello or hi.
 - Only use current, supported Earth Engine datasets. Do not use deprecated or removed assets. For Landsat 8, use 'LANDSAT/LC08/C02/T1_TOA'.
 - If the user specifies a single date for filtering an image collection, always set the end date to one week after the start date (end_date = start_date + 7 days) to avoid empty date range errors in Earth Engine.
-- If using Sentinel-1 SAR data, always check that both 'VV' and 'VH' bands exist in each image before using them (e.g., by filtering or conditional logic). If not present, skip or handle safely to avoid errors. Never assume both bands are present in all images.`;
+- If using Sentinel-1 SAR data, always check that both 'VV' and 'VH' bands exist in each image before using them (e.g., by filtering or conditional logic). If not present, skip or handle safely to avoid errors. Never assume both bands are present in all images.
+- When generating a flood risk map using Sentinel-1, always:
+  - Use a date range of at least 7 days starting from the given date.
+  - Filter for both 'VV' and 'VH' polarizations and 'IW' mode.
+  - Print the image count after filtering.
+  - Use the ratio VH/VV for flood risk mapping, not the difference.
+  - Print the tile URL and bounding box.
+  - If the image collection is empty, print a warning and do not attempt to generate a map.
+  - Wrap all output in try/except and print errors if they occur.`;
 
     // Build the message list for OpenAI
     const messages: any[] = [
