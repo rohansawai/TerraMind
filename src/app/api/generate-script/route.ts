@@ -39,7 +39,8 @@ export async function POST(req: NextRequest) {
   - Print the tile URL and bounding box.
   - If the image collection is empty, print a warning and do not attempt to generate a map.
   - Wrap all output in try/except and print errors if they occur.
-- You must always respond using the provided function/tool call, never as plain text or a code block. Do not output code blocks or plain text. Only use the function call with the required arguments.`;
+- You must always respond using the provided function/tool call, never as plain text or a code block. Do not output code blocks or plain text. Only use the function call with the required arguments.
+- When using Sentinel-2, always use the current, supported collection (COPERNICUS/S2_SR or COPERNICUS/S2_HARMONIZED). Do not use deprecated assets. For cloud masking, use the QA60 band or S2 cloud probability, not Landsat.simpleCloudScore.`;
 
     // Build the message list for OpenAI
     const messages: any[] = [
