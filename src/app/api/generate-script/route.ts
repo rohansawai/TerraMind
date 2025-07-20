@@ -38,7 +38,8 @@ export async function POST(req: NextRequest) {
   - Use the ratio VH/VV for flood risk mapping, not the difference.
   - Print the tile URL and bounding box.
   - If the image collection is empty, print a warning and do not attempt to generate a map.
-  - Wrap all output in try/except and print errors if they occur.`;
+  - Wrap all output in try/except and print errors if they occur.
+- You must always respond using the provided function/tool call, never as plain text or a code block. Do not output code blocks or plain text. Only use the function call with the required arguments.`;
 
     // Build the message list for OpenAI
     const messages: any[] = [
