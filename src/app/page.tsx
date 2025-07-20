@@ -79,9 +79,6 @@ export default function LandingPage() {
         >
           Try the Demo
         </a>
-        <div className="mt-4 text-gray-500 dark:text-gray-400 text-sm">
-          <span className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full font-semibold mr-2">Now Open for Investor Demos</span>
-        </div>
       </section>
 
       {/* Product Highlights */}
@@ -125,29 +122,6 @@ export default function LandingPage() {
             <p className="text-gray-600 dark:text-gray-300">Empower your team to run advanced analyses without writing code.</p>
           </div>
         </div>
-      </section>
-
-      {/* Team & Vision */}
-      <section className="w-full max-w-3xl py-12 px-6 text-center">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Our Vision</h2>
-        <p className="text-gray-700 dark:text-gray-200 text-lg mb-6">
-          We believe the future of geospatial intelligence is AI-driven, collaborative, and accessible to all. TerraMind is building the platform to make that future a reality.
-        </p>
-        <div className="flex flex-col items-center gap-2">
-          <span className="text-gray-500 dark:text-gray-400 text-sm">Built by a passionate team of AI, GIS, and cloud experts.</span>
-        </div>
-      </section>
-
-      {/* Contact/CTA */}
-      <section className="w-full max-w-2xl py-12 px-6 text-center">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Interested in Investing or Partnering?</h2>
-        <p className="text-gray-700 dark:text-gray-200 mb-6">Contact us for a demo, partnership, or to learn more about our vision for AI-powered geospatial intelligence.</p>
-        <a
-          href="mailto:founder@terramind.ai"
-          className="inline-block bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold text-lg px-8 py-4 rounded-lg shadow-lg hover:from-blue-700 hover:to-cyan-600 transition"
-        >
-          Contact the Founders
-        </a>
       </section>
     </main>
   );
