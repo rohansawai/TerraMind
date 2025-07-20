@@ -27,20 +27,36 @@ export async function POST(req: NextRequest) {
 - Do not wrap the JSON in quotes or triple backticks.
 - Never output the JSON as a string. Output a raw JSON object only.
 - Never wrap the JSON in code blocks or quotes. Never output the JSON as a string. Output a raw JSON object only.
-- Never reply with a greeting or plain text. Always return a JSON object as specified, even if the user says hello or hi.
-- Only use current, supported Earth Engine datasets. Do not use deprecated or removed assets. For Landsat 8, use 'LANDSAT/LC08/C02/T1_TOA'.
-- If the user specifies a single date for filtering an image collection, always set the end date to one week after the start date (end_date = start_date + 7 days) to avoid empty date range errors in Earth Engine.
+- If the user specifies a single date for filtering an image collection, always set the end date to one month after the start date (end_date = start_date + 1 month) to avoid empty date range errors in Earth Engine.
 - If using Sentinel-1 SAR data, always check that both 'VV' and 'VH' bands exist in each image before using them (e.g., by filtering or conditional logic). If not present, skip or handle safely to avoid errors. Never assume both bands are present in all images.
-- When generating a flood risk map using Sentinel-1, always:
-  - Use a date range of at least 7 days starting from the given date.
-  - Filter for both 'VV' and 'VH' polarizations and 'IW' mode.
-  - Print the image count after filtering.
-  - Use the ratio VH/VV for flood risk mapping, not the difference.
-  - Print the tile URL and bounding box.
-  - If the image collection is empty, print a warning and do not attempt to generate a map.
-  - Wrap all output in try/except and print errors if they occur.
 - You must always respond using the provided function/tool call, never as plain text or a code block. Do not output code blocks or plain text. Only use the function call with the required arguments.
-- When using Sentinel-2, always use the current, supported collection (COPERNICUS/S2_SR or COPERNICUS/S2_HARMONIZED). Do not use deprecated assets. For cloud masking, use the QA60 band or S2 cloud probability, not Landsat.simpleCloudScore.`;
+- When using Sentinel-2, always use the current, supported collection (COPERNICUS/S2_HARMONIZED). Do not use deprecated assets.
+- When visualizing an image, always select a single band (e.g., .select('NDVI')) before applying a palette or visualization parameters.
+- For any flood risk mapping using Sentinel-1, always:
+  - Use the COPERNICUS/S1_GRD collection.
+  - Use a buffer of 10 km around the specified city or coordinates.
+  - Use a date range of at least 7 days.
+  - Filter for both 'VV' and 'VH' polarizations and 'IW' mode.
+  - Compute the VH/VV ratio as a single-band image for flood mapping.
+  - Print the image count after filtering.
+  - Visualize the result as a single-band raster with a blue-white-green palette.
+  - Print the tile URL and bounding box.
+
+- For NDVI mapping, always:
+  - NEVER use deprecated assets.
+  - Use a buffer of 10 km around the specified city or coordinates.
+  - Use the date range provided by the user.
+  - Mask clouds using the QA60 band.
+  - Add NDVI as a band (B8 - B4) / (B8 + B4).
+  - Print the image count after filtering.
+  - Visualize the median NDVI as a single-band raster with a white-green palette.
+  - Print the tile URL and bounding box.
+
+- For country boundaries or vector layers:
+  - Use a current, public dataset (e.g., FAO/GAUL/2015/level0 or USDOS/LSIB_SIMPLE/2017).
+  - Filter for the specified country.
+  - Print the bounding box of the country.
+  - Visualize the boundaries as a vector layer and print the tile URL if possible.`;
 
     // Build the message list for OpenAI
     const messages: any[] = [

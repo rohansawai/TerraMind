@@ -19,6 +19,22 @@ function ChatTab({ code, setCode, messages, setMessages, context, setContext }: 
   const [isLoading, setIsLoading] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
+  // Predefined demo prompts (limit to 3)
+  const demoPrompts = [
+    "Build me a Flood Risk Map for Jakarta for the extreme flood in January 2020",
+    "Show me the NDVI for Jalandhar from  2024-01-01 to 2024-03-01",
+    "Display the country boundaries for India as a vector layer"
+  ];
+
+  // Auto-send prompt on click
+  const handlePromptClick = (prompt: string) => {
+    setInput(prompt);
+    setTimeout(() => {
+      const fakeEvent = { preventDefault: () => {} } as React.FormEvent;
+      handleSubmit(fakeEvent);
+    }, 0);
+  };
+
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading]);
@@ -83,7 +99,24 @@ function ChatTab({ code, setCode, messages, setMessages, context, setContext }: 
         )}
         <div ref={chatEndRef} />
       </div>
-      <form onSubmit={handleSubmit} className="flex gap-2 pt-4 pb-2 px-2 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 shadow-md">
+      {/* Demo prompt buttons at the bottom */}
+      <div className="w-full px-2 pb-2">
+        <div className="mb-2 text-sm font-semibold text-gray-600 dark:text-gray-300">Try a demo prompt:</div>
+        <div className="flex flex-col gap-3">
+          {demoPrompts.map((prompt, idx) => (
+            <button
+              key={idx}
+              className="bg-blue-100 text-blue-800 px-4 py-3 rounded-lg text-base font-medium text-left hover:bg-blue-200 transition border border-blue-200 shadow-sm whitespace-normal"
+              onClick={() => handlePromptClick(prompt)}
+              type="button"
+              style={{ lineHeight: '1.4' }}
+            >
+              {prompt}
+            </button>
+          ))}
+        </div>
+      </div>
+      <form onSubmit={handleSubmit} className="flex gap-2 pt-2 pb-2 px-2 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 shadow-md">
         <input
           className="flex-1 border rounded px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Type a request for code..."
