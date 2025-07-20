@@ -322,18 +322,24 @@ export default function TerraMindApp() {
   };
   // Attach/detach listeners
   React.useEffect(() => {
-    if (draggingSidebar.current) {
-      window.addEventListener('mousemove', onSidebarDragMove);
-      window.addEventListener('mouseup', onSidebarDragEnd);
-    } else {
-      window.removeEventListener('mousemove', onSidebarDragMove);
-      window.removeEventListener('mouseup', onSidebarDragEnd);
-    }
-    return () => {
-      window.removeEventListener('mousemove', onSidebarDragMove);
-      window.removeEventListener('mouseup', onSidebarDragEnd);
+    const handleMouseMove = (e: MouseEvent) => {
+      if (draggingSidebar.current) {
+        // Minimum 240px, maximum 600px
+        const newWidth = Math.max(240, Math.min(e.clientX, 600));
+        setSidebarWidth(newWidth);
+      }
     };
-  }, [draggingSidebar.current]);
+    const handleMouseUp = () => {
+      draggingSidebar.current = false;
+      document.body.style.cursor = '';
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, []);
 
   return (
     <div className="h-screen flex flex-col bg-gray-50 dark:bg-gray-950">

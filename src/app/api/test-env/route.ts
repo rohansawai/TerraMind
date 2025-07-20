@@ -7,13 +7,13 @@ export async function GET(req: NextRequest) {
     hasApiKey: !!apiKey,
     apiKeyLength: apiKey ? apiKey.length : 0,
     apiKeyPrefix: apiKey ? apiKey.substring(0, 10) + '...' : 'none',
-    allEnvVars: Object.keys(env).filter(key => key.includes('OPENAI')),
+    allEnvVars: Object.keys(process.env).filter(key => key.includes('OPENAI')),
     envModuleLoaded: true,
     apiKeyFromEnvModule: apiKey ? 'loaded' : 'not loaded',
-    processEnvOpenAI: env.OPENAI_API_KEY ? 'exists' : 'missing',
-    processEnvOpenAILength: env.OPENAI_API_KEY?.length || 0,
-    processEnvOpenAIPrefix: env.OPENAI_API_KEY?.substring(0, 10) || 'none',
+    processEnvOpenAI: process.env.OPENAI_API_KEY ? 'exists' : 'missing',
+    processEnvOpenAILength: process.env.OPENAI_API_KEY?.length || 0,
+    processEnvOpenAIPrefix: process.env.OPENAI_API_KEY?.substring(0, 10) || 'none',
     cwd: process.cwd(),
-    nodeEnv: env.NODE_ENV
+    nodeEnv: process.env.NODE_ENV
   });
 } 
